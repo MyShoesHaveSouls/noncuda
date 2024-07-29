@@ -40,17 +40,20 @@ def generate_eth_address(private_key):
 
 def process_private_key_range(start_key, end_key):
     num_keys = end_key - start_key + 1
-    private_keys = [hex(start_key + i)[2:].zfill(64) for i in range(num_keys)]
-    
-    with ThreadPoolExecutor() as executor:
-        futures = []
-        for private_key in private_keys:
-            future = executor.submit(generate_eth_address, private_key)
-            futures.append((private_key, future))
+    chunk_size = 1000  # Process in chunks to manage memory usage
+    for start in range(start_key, end_key + 1, chunk_size):
+        end = min(start + chunk_size - 1, end_key)
+        private_keys = [hex(i)[2:].zfill(64) for i in range(start, end + 1)]
         
-        for private_key, future in futures:
-            eth_address = future.result()
-            executor.submit(save_to_db, private_key, eth_address)
+        with ThreadPoolExecutor() as executor:
+            futures = []
+            for private_key in private_keys:
+                future = executor.submit(generate_eth_address, private_key)
+                futures.append((private_key, future))
+            
+            for private_key, future in futures:
+                eth_address = future.result()
+                executor.submit(save_to_db, private_key, eth_address)
 
 def search_by_wallet_address(eth_address):
     with sqlite3.connect(db_file) as conn:
@@ -101,4 +104,3 @@ if __name__ == '__main__':
         print(f"Private key for address {address_to_search}: {private_key}")
     else:
         print("Address not found.")
-        

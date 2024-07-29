@@ -1,0 +1,32 @@
+Create a Swap File:
+
+bash
+Copy code
+sudo fallocate -l 4G /swapfile
+Set Correct Permissions:
+
+bash
+Copy code
+sudo chmod 600 /swapfile
+Set Up the Swap Area:
+
+bash
+Copy code
+sudo mkswap /swapfile
+Enable the Swap File:
+
+bash
+Copy code
+sudo swapon /swapfile
+Verify Swap Space:
+
+bash
+Copy code
+sudo swapon --show
+Make Swap Permanent:
+
+Add the following line to /etc/fstab to ensure the swap file is activated at boot:
+
+bash
+Copy code
+/swapfile none swap sw 0 0

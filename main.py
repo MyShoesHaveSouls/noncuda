@@ -45,8 +45,17 @@ def process_private_key_range(start_key, end_key):
         end = min(start + chunk_size - 1, end_key)
         private_keys = [hex(i)[2:].zfill(64) for i in range(start, end + 1)]
         
-        with ThreadPoolExecutor() as executor:
-            futures = []
+from concurrent.futures import ThreadPoolExecutor
+
+def worker(task):
+    # Your worker function
+    pass
+
+with ThreadPoolExecutor(max_workers=10) as executor:
+    results = [executor.submit(worker, task) for task in tasks]
+    for future in futures:
+        result = future.result()
+
             for private_key in private_keys:
                 future = executor.submit(generate_eth_address, private_key)
                 futures.append((private_key, future))

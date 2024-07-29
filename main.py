@@ -2,6 +2,7 @@ import os
 import threading
 import sqlite3
 import numpy as np
+import time
 from web3 import Web3
 from concurrent.futures import ThreadPoolExecutor
 
@@ -66,9 +67,11 @@ def search_by_wallet_address(eth_address):
 if __name__ == '__main__':
     initialize_db()
     
-    # Process private key range
+    # Get input and record start time
     start_key = int(input("Enter start private key (in hex, without 0x): "), 16)
     end_key = int(input("Enter end private key (in hex, without 0x): "), 16)
+    
+    start_time = time.time()  # Record start time
     
     # Number of threads for parallel processing
     num_threads = os.cpu_count()
@@ -84,6 +87,12 @@ if __name__ == '__main__':
 
     for t in threads:
         t.join()
+    
+    end_time = time.time()  # Record end time
+    
+    # Print elapsed time
+    elapsed_time = end_time - start_time
+    print(f"Processing time: {elapsed_time:.2f} seconds")
 
     # Example search
     address_to_search = input("Enter Ethereum address to search: ")
@@ -92,3 +101,4 @@ if __name__ == '__main__':
         print(f"Private key for address {address_to_search}: {private_key}")
     else:
         print("Address not found.")
+        

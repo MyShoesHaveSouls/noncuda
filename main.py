@@ -56,11 +56,11 @@ with ThreadPoolExecutor(max_workers=10) as executor:
     for future in futures:
         result = future.result()
 
-            for private_key in private_keys:
+    for private_key in private_keys:
                 future = executor.submit(generate_eth_address, private_key)
                 futures.append((private_key, future))
             
-            for private_key, future in futures:
+    for private_key, future in futures:
                 eth_address = future.result()
                 executor.submit(save_to_db, private_key, eth_address)
 
